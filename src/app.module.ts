@@ -3,7 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PostsModule } from './posts/posts.module';
 import envConfig from '../config/env';
+import { PostsEntity } from './posts/entities/posts.entity';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import envConfig from '../config/env';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql', // 数据库类型
-        entities: [], // 数据表实体，synchronize为true时，自动创建表，生产环境建议关闭
+        entities: [PostsEntity], // 数据表实体，synchronize为true时，自动创建表，生产环境建议关闭
         host: configService.get('DB_HOST'), // 主机，默认为localhost
         port: configService.get<number>('DB_PORT'), // 端口号
         username: configService.get('DB_USER'), // 用户名
@@ -26,9 +28,9 @@ import envConfig from '../config/env';
         synchronize: true, //根据实体自动创建数据库表， 生产环境建议关闭
       }),
     }),
+    PostsModule,
   ],
   controllers: [AppController],
-  // 注册为全局守卫
   providers: [AppService],
 })
 export class AppModule {}
