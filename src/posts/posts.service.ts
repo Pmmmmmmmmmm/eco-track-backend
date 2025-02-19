@@ -30,19 +30,29 @@ export class PostsService {
   }
 
   // 获取文章列表
-  async findAll(page: number = 1, pageSize: number = 10): Promise<PostsRo> {
-    const [posts, totalCount] = await this.postsRepository.findAndCount({
-      skip: (page - 1) * pageSize, // 分页偏移量
-      take: pageSize, // 每页显示的记录数
-      order: { create_time: 'DESC' },
-    });
+  async findAll({ page = 1, pageSize = 10 }): Promise<PostsRo> {
+    try {
+      const [posts, totalCount] = await this.postsRepository.findAndCount({
+        skip: (page - 1) * pageSize, // 分页偏移量
+        take: pageSize, // 每页显示的记录数
+        order: { create_time: 'DESC' },
+      });
 
-    return {
-      list: posts,
-      count: totalCount,
-      totalPages: Math.ceil(totalCount / pageSize), // 计算总页数
-      currentPage: page, // 当前页
-    };
+      return {
+        list: posts,
+        count: totalCount,
+        totalPages: Math.ceil(totalCount / pageSize), // 计算总页数
+        currentPage: page, // 当前页
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        list: [],
+        count: 0,
+        totalPages: 0,
+        currentPage: page,
+      };
+    }
   }
 
   // 获取指定文章
